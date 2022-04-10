@@ -7,20 +7,28 @@ void Calculator::AddOperator(int oper) {
 
 int Calculator::GetResult() {
     // only 2 member and 1 action
-    int first = operators.back();
+    int second = operators.back();
     operators.pop_back();
 
     char action = static_cast<char>(operators.back());
     operators.pop_back();
 
-    int second = operators.back();
+    int first = operators.back();
     operators.pop_back();
 
     switch (action) {
         case '+':
             return first + second;
             break;
-    
+        case '-':
+            return first - second;
+            break;
+        case '*':
+            return first * second;
+            break;
+        case '/':
+            return first / second;
+            break;
         default:
             break;
     }

@@ -22,5 +22,4 @@ int main()  {
     calc.AddOperator(static_cast<int>(action));
     calc.AddOperator(second);
     std::cout << calc.GetResult();
-
 }
