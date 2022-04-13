@@ -13,27 +13,37 @@ void Calculator::AddMember(char action) {
     eq_members.push_back( {Type::Variable, 0, action} );
 }
 
+void Calculator::ClearMembers() {
+    eq_members.clear();
+}
+
 // only spaces allow
-void Calculator::AddEquation(std::string equation) { 
+bool Calculator::AddEquation(std::string equation) { 
     std::string number;
     for (char symbol : equation) {
-        if (symbol >= '0' && symbol <= '9') {
+        if (symbol >= '0' && symbol <= '9' || symbol == '.' || symbol == ',') {
             number.push_back(symbol);
+
         } else if (IsOperator(symbol)) {
-            AddMember(std::stod(number));
-            number.clear();
+            if (!number.empty()) {
+                AddMember(std::stod(number));
+                number.clear();
+            }
+                       
             AddMember(symbol);
+
         } else if (symbol == ' ') {
             continue;
         } else {
-            break;
+            return false;
         }
     }
     AddMember(std::stod(number));
+    return true;
 }
 
 // only 2 member and 1 action
-int Calculator::GetResult() {
+double Calculator::GetResult() {
     double second = eq_members.back().number;
     eq_members.pop_back();
 
@@ -43,24 +53,27 @@ int Calculator::GetResult() {
     double first = eq_members.back().number;
     eq_members.pop_back();
 
+    double result = 0;
+
     switch (action) {
         case '+':
-            return first + second;
+            result = first + second;
             break;
         case '-':
-            return first - second;
+            result = first - second;
             break;
         case '*':
-            return first * second;
+            result = first * second;
             break;
         case '/':
-            return first / second;
+            result = first / second;
             break;
         default:
-            break;
+            return -1;
     }
 
-    return -1;
+    AddMember(result);
+    return result;
 }
 
 // ----------------- private -----------------

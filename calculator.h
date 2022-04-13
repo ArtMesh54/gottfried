@@ -5,9 +5,10 @@ class Calculator {
 public:
     void AddMember(double num);
     void AddMember(char action);
+    void ClearMembers();
 
-    void AddEquation(std::string equation);
-    int GetResult();
+    bool AddEquation(std::string equation);
+    double GetResult();
 
 private: 
     enum Type { Variable, Action};
