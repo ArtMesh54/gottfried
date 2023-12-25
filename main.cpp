@@ -2,15 +2,20 @@
 #include <string>
 
 #include "calculator.h"
+#include "gui.h"
 
 int main()  {
     std::cout << "Hello, I am Gottfried \n";
     std::cout << "Enter your equation ";
 
+    gui::OpenWindow();
+
     Calculator calc;
     std::string equation;
 
-    while (true) {
+    int tryCount = 0;
+
+    while (tryCount < 5) {
         std::getline(std::cin, equation);
         std::cout << equation << "\n= ";
 
@@ -25,5 +30,6 @@ int main()  {
         equation.clear();
         std::cout << calc.GetResult();
         std::cout << std::endl;
+        ++tryCount;
     }
 }

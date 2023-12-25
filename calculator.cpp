@@ -17,7 +17,7 @@ void Calculator::ClearMembers() {
     eq_members.clear();
 }
 
-// only spaces allow
+// only spaces allowed
 bool Calculator::AddEquation(std::string equation) { 
     std::string number;
     for (char symbol : equation) {
@@ -79,8 +79,5 @@ double Calculator::GetResult() {
 // ----------------- private -----------------
 
 bool Calculator::IsOperator(char symbol) {
-    if (symbol == '+' || symbol == '-' || symbol == '*' || symbol == '/' ) {
-        return true;
-    }
-    return false;
+    return symbol == '+' || symbol == '-' || symbol == '*' || symbol == '/';
 }
