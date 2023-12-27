@@ -8,6 +8,10 @@
 
 namespace gui {
 
+#define BTN_CALC    1000
+#define FLD_INPUT   1001
+#define FLD_RESULT  1002
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int WINAPI OpenWindow(HINSTANCE hInstance = 0, 
@@ -46,9 +50,24 @@ int WINAPI OpenWindow(HINSTANCE hInstance = 0,
         return 0;
     }
 
-    HWND hwnd_input_field = CreateWindow(TEXT("Edit"), TEXT("Equation"), WS_CHILD | WS_VISIBLE | WS_BORDER, 100, 20, 200, 20, h_main_window, NULL, NULL, NULL);
-    HWND hwnd_result_field = CreateWindow(TEXT("Edit"), TEXT("here will be result"), WS_CHILD | WS_VISIBLE | WS_BORDER, 100, 50, 140, 20, h_main_window, NULL, NULL, NULL);
-    HWND hwnd_calculate_button = CreateWindow(TEXT("button"), TEXT("Calculate"), WS_CHILD | WS_VISIBLE | WS_BORDER, 320, 20, 100, 30, h_main_window, NULL, NULL, NULL);
+    HWND hwnd_input_field = CreateWindow(TEXT("Edit"), 
+                                         TEXT("Equation"), 
+                                         WS_CHILD | WS_VISIBLE | WS_BORDER, 
+                                         100, 20, 200, 20, 
+                                         h_main_window, 
+                                         (HMENU)FLD_INPUT, NULL, NULL);
+    HWND hwnd_result_field = CreateWindow(TEXT("Edit"), 
+                                          TEXT("here will be result"), 
+                                          WS_CHILD | WS_VISIBLE | WS_BORDER, 
+                                          100, 50, 140, 20, 
+                                          h_main_window, 
+                                          (HMENU)FLD_RESULT, NULL, NULL);
+    HWND hwnd_calculate_button = CreateWindow(TEXT("button"), 
+                                              TEXT("Calculate"), 
+                                              WS_CHILD | WS_VISIBLE | WS_BORDER, 
+                                              320, 20, 100, 30, 
+                                              h_main_window, 
+                                              (HMENU)BTN_CALC, NULL, NULL);
 
     ShowWindow(h_main_window, nCmdShow);
     UpdateWindow(h_main_window);
@@ -73,7 +92,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             switch(LOWORD(wParam))
             {
+                case BTN_CALC:
+                {
+                    int len = GetWindowTextLength(GetDlgItem(hwnd, FLD_INPUT));
+                    if(len > 0)
+                    {
+                        int i;
+                        wchar_t* buf;
 
+                        buf = (wchar_t*) GlobalAlloc(GPTR, len + 1);
+                        GetDlgItemText(hwnd, FLD_INPUT, buf, len + 1);
+
+                        SetDlgItemText(hwnd, FLD_RESULT, buf);
+
+                        GlobalFree((HANDLE)buf);
+                    }
+                }
             }
         }
         case WM_CREATE:
