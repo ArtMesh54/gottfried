@@ -109,24 +109,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     }
                 }
             }
-        }
-        case WM_CREATE:
-        {
-            CreateWindow(
-                TEXT("button"), // lp class name
-                TEXT("Beep"), // lp window name
-                WS_VISIBLE | WS_CHILD, // dw style
-                20, // x
-                50, // y
-                80, // n width
-                25, // n height
-                hwnd, // hwnd parent
-                (HMENU) 1, // h menu
-                NULL, // h instance
-                NULL); // lp param
             break;
         }
-
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
@@ -141,8 +125,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
             EndPaint(hwnd, &ps);
         }
-            return 0;
-
+        return 0;
     }
 
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
