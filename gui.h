@@ -4,6 +4,7 @@
 #define UNICODE
 #endif 
 
+#include "calculator.h"
 #include <windows.h>
 
 namespace gui {
@@ -95,17 +96,27 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 case BTN_CALC:
                 {
                     int len = GetWindowTextLength(GetDlgItem(hwnd, FLD_INPUT));
-                    if(len > 0)
+                    
+                    Calculator calc;
+
+                    if (len > 0)
                     {
-                        int i;
-                        wchar_t* buf;
+                        wchar_t* equation = new wchar_t[len + 1];
+                        GetDlgItemText(hwnd, FLD_INPUT, equation, len + 1);
 
-                        buf = (wchar_t*) GlobalAlloc(GPTR, len + 1);
-                        GetDlgItemText(hwnd, FLD_INPUT, buf, len + 1);
+                        if (equation == L"break") {
+                            calc.ClearMembers();
+                            return 0;
+                        }
 
-                        SetDlgItemText(hwnd, FLD_RESULT, buf);
+                        calc.AddEquation(equation);
 
-                        GlobalFree((HANDLE)buf);
+                        std::wstring str_result = std::to_wstring(calc.GetResult());
+                        const wchar_t* result = str_result.c_str();
+
+                        SetDlgItemText(hwnd, FLD_RESULT, result);
+
+                        delete[] equation;
                     }
                 }
             }
@@ -120,7 +131,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
             // All painting occurs here, between BeginPaint and EndPaint.
-
             FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
 
             EndPaint(hwnd, &ps);

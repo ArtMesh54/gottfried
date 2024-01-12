@@ -9,7 +9,7 @@ public:
     void AddMember(char action);
     void ClearMembers();
 
-    bool AddEquation(std::string equation);
+    bool AddEquation(std::wstring equation);
     double GetResult();
 
 private: 

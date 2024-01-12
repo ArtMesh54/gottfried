@@ -18,8 +18,8 @@ void Calculator::ClearMembers() {
 }
 
 // only spaces allowed
-bool Calculator::AddEquation(std::string equation) { 
-    std::string number;
+bool Calculator::AddEquation(std::wstring equation) { 
+    std::wstring number;
     for (char symbol : equation) {
         if (symbol >= '0' && symbol <= '9' || symbol == '.' || symbol == ',') {
             number.push_back(symbol);
