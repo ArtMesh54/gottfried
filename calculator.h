@@ -9,7 +9,7 @@ public:
     void AddMember(char action);
     void ClearMembers();
 
-    bool AddEquation(std::wstring equation);
+    bool AddEquation(const std::wstring& equation);
     double GetResult();
 
 private: 
@@ -23,6 +23,8 @@ private:
 
 private:
     bool IsOperator(char symbol);
+    int OperatorPriority(char symbol);
+    std::wstring ConvertToRPN(const std::wstring& equation);
 
 private:
     std::vector<Member> eq_members;
