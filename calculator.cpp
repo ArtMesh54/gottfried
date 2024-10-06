@@ -1,5 +1,7 @@
 #include <vector>
 #include <string>
+#include <stack>
+#include <iostream>
 
 #include "calculator.h"
 
@@ -10,74 +12,125 @@ void Calculator::AddMember(double num) {
 }
 
 void Calculator::AddMember(char action) {
-    eq_members.push_back( {Type::Variable, 0, action} );
+    eq_members.push_back( {Type::Action, 0, action} );
 }
 
 void Calculator::ClearMembers() {
     eq_members.clear();
 }
 
-// only spaces allowed
-bool Calculator::AddEquation(std::wstring equation) { 
-    std::wstring number;
-    for (char symbol : equation) {
+bool Calculator::AddEquation(const std::wstring& equation) { 
+    std::wstring rpn_equation = ConvertToRPN(equation);
+  
+    std::wstring member;
+    bool is_current_number = false;
+    
+    for (char symbol : rpn_equation) {
         if (symbol >= '0' && symbol <= '9' || symbol == '.' || symbol == ',') {
-            number.push_back(symbol);
-
+            member.push_back(symbol);
+            is_current_number = true;
         } else if (IsOperator(symbol)) {
-            if (!number.empty()) {
-                AddMember(std::stod(number));
-                number.clear();
-            }
-                       
             AddMember(symbol);
-
+            is_current_number = false;
         } else if (symbol == ' ') {
-            continue;
+            if (is_current_number) {
+                AddMember(std::stod(member));
+                member.clear();
+                is_current_number = false;
+            }
         } else {
             return false;
         }
     }
-    AddMember(std::stod(number));
+
     return true;
 }
 
-// only 2 member and 1 action
 double Calculator::GetResult() {
-    double second = eq_members.back().number;
-    eq_members.pop_back();
+    std::string rpn;
+    std::stack<double> operands;
+    for (auto element : eq_members) {
+        if (element.type == Calculator::Type::Variable) {
+          auto num = element.number;
+          operands.push(num);
+        } else if (element.type == Calculator::Type::Action) {
+            double operand2 = operands.top();
+            operands.pop();
+            double operand1 = operands.top();
+            operands.pop();
 
-    char action = eq_members.back().action;
-    eq_members.pop_back();
-
-    double first = eq_members.back().number;
-    eq_members.pop_back();
-
-    double result = 0;
-
-    switch (action) {
-        case '+':
-            result = first + second;
-            break;
-        case '-':
-            result = first - second;
-            break;
-        case '*':
-            result = first * second;
-            break;
-        case '/':
-            result = first / second;
-            break;
-        default:
-            return -1;
+            switch (element.action) {
+                case '+':
+                    operands.push(operand1 + operand2);
+                    break;
+                case '-':
+                    operands.push(operand1 - operand2);
+                    break;
+                case '*':
+                    operands.push(operand1 * operand2);
+                    break;
+                case '/':
+                    operands.push(operand1 / operand2);
+                    break;
+            }
+        }  
     }
 
-    AddMember(result);
-    return result;
+    return operands.top();
 }
 
 // ----------------- private -----------------
 
 bool Calculator::IsOperator(char symbol) {
     return symbol == '+' || symbol == '-' || symbol == '*' || symbol == '/';
+}
+
+int Calculator::OperatorPriority(char symbol) {
+  switch (symbol) {
+    case '*':
+    case '/':
+      return 2;
+    case '+':
+    case '-':
+      return 1;
+    default:
+      return 0;
+  }
+}
+
+std::wstring Calculator::ConvertToRPN(const std::wstring& equation) {
+  std::stack<char> operators;
+  std::wstring rpn_equation;
+
+  for (char c : equation) {
+    if (isdigit(c)) {
+      rpn_equation += c;
+    } else if (c == '(') {
+      operators.push(c);
+    } else if (c == ')') {
+      while (!operators.empty() && operators.top() != '(') {
+        rpn_equation += ' ';
+        rpn_equation += operators.top();
+        operators.pop();
+      }
+      operators.pop(); // Pop the '('
+    } else if (IsOperator(c)) {
+      while (!operators.empty() && OperatorPriority(operators.top()) >= OperatorPriority(c)) {
+        rpn_equation += ' ';
+        rpn_equation += operators.top();
+        operators.pop();
+      }
+      operators.push(c);
+      rpn_equation += ' '; // Add space to distinguish numbers
+    }
+  }
+
+  // Append remaining operators
+  while (!operators.empty()) {
+    rpn_equation += ' ';
+    rpn_equation += operators.top();
+    operators.pop();
+  }
+
+  return rpn_equation;
 }
